@@ -1,0 +1,7 @@
+{
+  "name": "mydirtycards",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}
