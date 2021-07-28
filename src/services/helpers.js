@@ -28,7 +28,7 @@ export const GET_ = async(action, className, option = null) => {
     const userSession = new StorageService().get("userSession");
 
     const headers = new Headers();
-    headers.append("Authorization", "Basic " + window.btoa(userSession.userId + ":" + userSession.sessionId));
+    headers.append("Authorization", "Basic " + window.btoa(userSession.id + ":" + userSession.sessionId));
 
     const response = await window.fetch(url);
     if (response.status == 200 || response.status == 201) {
@@ -46,7 +46,7 @@ export const POST_ = async(action, className, body, option = null, contentType =
 
     const headers = new Headers();
     headers.append("Content-Type", contentType);
-    headers.append("Authorization", "Basic " + window.btoa(userSession.userId + ":" + userSession.sessionId));
+    headers.append("Authorization", "Basic " + window.btoa(userSession.id + ":" + userSession.sessionId));
 
     const reqInit = {
         method: "POST",
@@ -63,11 +63,9 @@ export const POST_ = async(action, className, body, option = null, contentType =
         console.log(response);
         throw ("Response status : " + response.status);
     }
-
 };
 
-
-export const getPost = async(action, className, body = null, option = null, contentType = "application/json") => {
+export const GET_POST_ = async(action, className, body = null, option = null, contentType = "application/json") => {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         const method = body ? "POST" : "GET";
@@ -76,7 +74,7 @@ export const getPost = async(action, className, body = null, option = null, cont
         xhr.open(method, url);
         xhr.addEventListener("load", () => {
             if (xhr.status === 200) {
-                console.log(xhr.responseText);
+                // console.log(xhr.responseText);
                 resolve(JSON.parse(xhr.responseText).records);
             } else {
                 console.log(xhr.status);
@@ -85,6 +83,7 @@ export const getPost = async(action, className, body = null, option = null, cont
         });
 
         xhr.addEventListener("error", error => {
+            console.log(error);
             reject({ error });
         });
 
@@ -110,14 +109,3 @@ export const FORMAT_DATA_TO_POST = obj => {
     }
     return output;
 };
-
-export const CONVERT_QUESTION_PARTS_IN_TEXT = question => {
-    let text = "";
-    for (const key in question) {
-        if (key !== "part1") {
-            text += " ______ ";
-        }
-        text += question[key];
-    }
-    return { text };
-}

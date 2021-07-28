@@ -4,10 +4,10 @@ import { RouteRecordRaw } from 'vue-router';
 const routes: Array<RouteRecordRaw> = [
   {
     path: '',
-    redirect: '/login'
+    redirect: '/connexion'
   },
   {
-    path: '/login',
+    path: '/connexion',
     component: () => import ('../views/Login.vue')
   },
   {

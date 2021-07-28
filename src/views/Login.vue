@@ -209,9 +209,25 @@ export default {
         email: false,
         pwd: false,
         differentPwds: false
-      }
+      },
+      events: []  // TEST
     };
   },
+  mounted() { // TEST --
+    console.log('subscribing to `my-channel`...', {
+      $pusher: this.$pusher,
+    })
+
+    const channel = this.$pusher.subscribe('my-channel');
+
+    channel.bind('pusher:subscription_succeeded', () => console.log('subscription succeeded'))
+
+    channel.bind('my-event', event => {
+      console.log('my-event', event)
+      this.events.push(event)
+    });
+  }, // -- TEST
+  
   methods: {
     displaySignupForm() {
       this.shouldDisplayLoginForm = false;
@@ -249,8 +265,7 @@ export default {
       // }
 
       const auth = new Auth();
-      auth.signup(this.user).then(res => {
-        console.log(res);
+      auth.signup(this.user).then(() => {
         this.isSignedUp = true;
         window.setTimeout(() => {
           this.isSignedUp = false;
@@ -260,8 +275,7 @@ export default {
     },
     login() {
       const auth = new Auth();
-      auth.login(this.user).then(res => {
-        console.log(res);
+      auth.login(this.user).then(() => {
         this.isSignedUp = true;
         window.setTimeout(() => {
           this.isSignedUp = false;
@@ -399,17 +413,6 @@ export default {
   font-size: 12px;
 }
 
-@keyframes bottom-appear {
-  from {
-    top: 100vh;
-    opacity: 0;
-  }
-
-  to {
-    top: 40vh;
-    opacity: 1;
-  }
-}
 
 @keyframes color-appear {
   from {

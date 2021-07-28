@@ -1,26 +1,33 @@
 <template>
   <div class="caroussel-ctnr">
-    <nav class="btns-ctnr">
-      <button @click="moveLeft">
-        <ion-icon
-          class="caroussel-chevron"
-          :ios="chevronBackOutline"
-          :md="chevronBackOutline"
-        ></ion-icon>
-      </button>
-      <button @click="moveRight">
-        <ion-icon
-          class="caroussel-chevron"
-          :ios="chevronForwardOutline"
-          :md="chevronForwardOutline"
-        ></ion-icon>
-      </button>
-    </nav>
-    <ul v-bind:style="{ transform: 'translateX(' + translateX + 'vw)' }">
-      <li v-for="(item, i) in items" :key="i" @click="editItem(i)">
-        <p>{{ item.text }}</p>
-      </li>
-    </ul>
+    <div v-if="items && items.length > 0">
+      <nav class="btns-ctnr">
+        <button @click="moveLeft">
+          <ion-icon
+            class="caroussel-chevron"
+            :ios="chevronBackOutline"
+            :md="chevronBackOutline"
+          ></ion-icon>
+        </button>
+        <button @click="moveRight">
+          <ion-icon
+            class="caroussel-chevron"
+            :ios="chevronForwardOutline"
+            :md="chevronForwardOutline"
+          ></ion-icon>
+        </button>
+      </nav>
+      <ul v-bind:style="{ transform: 'translateX(' + translateX + 'vw)' }">
+        <li v-for="(item, i) in items" :key="i" @click="editItem(i)">
+          <p>{{ item.text }}</p>
+        </li>
+      </ul>
+    </div>
+    
+    <div v-else class="no-items-message">
+       <p>{{  noItemsMessage }}</p>
+    </div>
+   
   </div>
 </template>
 
@@ -35,7 +42,7 @@ export default {
     IonIcon,
   },
 
-  props: ["items"],
+  props: ["items", "noItemsMessage"],
 
   setup() {
     return {
@@ -62,12 +69,13 @@ export default {
     moveRight() {
       if (!this.canSlide || this.currentItem === this.items.length - 1) return;
       this.canSlide = false;
-      const finalTranslation = this.translateX - 44;
+      const finalTranslation = this.translateX - 45;
       const interval = window.setInterval(() => {
-        this.translateX -= 3;
+        this.translateX -= 4;
         if (this.translateX <= finalTranslation) {
           this.canSlide = true;
           this.currentItem++;
+          this.translateX = finalTranslation;
           window.clearInterval(interval);
         }
       }, 20);
@@ -75,19 +83,21 @@ export default {
     moveLeft() {
       if (!this.canSlide || this.currentItem === 0) return;
       this.canSlide = false;
-      const finalTranslation = this.translateX + 44;
+      const finalTranslation = this.translateX + 45;
       const interval = window.setInterval(() => {
-        this.translateX += 3;
+        this.translateX += 4;
         if (this.translateX >= finalTranslation) {
           this.currentItem--;
           this.canSlide = true;
+          this.translateX = finalTranslation;
           window.clearInterval(interval);
         }
       }, 20);
     },
     editItem(index) {
-        this.$emit('editCarousselItem', index);
-    } 
+      const item = {...this.items[index], index};
+      this.$emit("editCarousselItem", item);
+    },
   },
 };
 </script>
@@ -102,11 +112,10 @@ export default {
   overflow: hidden;
 }
 
-.caroussel-ctnr > ul {
+.caroussel-ctnr ul {
   list-style-type: none;
   padding-left: 0;
   display: flex;
-  margin-left: calc(50% - 25vw);
   position: relative;
   z-index: 1;
 }
@@ -116,12 +125,18 @@ export default {
   border: 2px solid var(--custom-yellow);
   border-radius: 8px;
   box-shadow: 1px 1px 4px var(--custom-yellow);
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+
 }
 
 .caroussel-ctnr li > p {
   color: var(--custom-yellow);
   width: 40vw;
-  height: 200px;
+
 }
 
 nav.btns-ctnr {
@@ -142,4 +157,17 @@ nav.btns-ctnr > button {
   color: var(--custom-pale-yellow);
   font-size: 30px;
 }
+
+.no-items-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+.no-items-message > p {
+    color: var(--custom-yellow);
+    text-align: center;
+    width: 70vw;
+    font-size: 6vw;
+  }
 </style>

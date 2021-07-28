@@ -8,7 +8,12 @@
             <ion-note>Amusement & indécence</ion-note>
   
             <ion-menu-toggle auto-hide="false" v-for="(p, i) in appPages" :key="i">
-              <ion-item @click="selectedIndex = i" router-direction="root" :router-link="p.url" lines="none" detail="false" class="hydrated" :class="{ selected: selectedIndex === i }">
+
+              <ion-item v-if="!p.shouldLogout" @click="selectedIndex = i" router-direction="root" :router-link="p.url" lines="none" detail="false" class="hydrated" :class="{ selected: selectedIndex === i }">
+                <ion-icon :class="p.className" :name="p.className"></ion-icon>
+                <ion-label>{{ p.title }}</ion-label>
+              </ion-item>
+               <ion-item v-else @click="logout(i)" router-direction="root" :router-link="p.url" lines="none" detail="false" class="hydrated" :class="{ selected: selectedIndex === i }">
                 <ion-icon :class="p.className" :name="p.className"></ion-icon>
                 <ion-label>{{ p.title }}</ion-label>
               </ion-item>
@@ -30,10 +35,14 @@
   </IonApp>
 </template>
 
-<script lang="ts">
+<script lang="js">
 import { IonApp, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonMenu, IonMenuToggle, IonNote, IonRouterOutlet, IonSplitPane, IonIcon } from '@ionic/vue';
 import { defineComponent, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import { logOutOutline } from "ionicons/icons";
+
+import Auth from './services/auth';
+
 
 export default defineComponent({
   name: 'App',
@@ -63,13 +72,14 @@ export default defineComponent({
         title: 'jouer',
         url: '/accueil',
         className:'custom-game'
+      },
+      {
+        title: 'Déconnexion',
+        url: '/connexion',
+        iosIcon: logOutOutline,
+        mdIcon: logOutOutline,
+        shouldLogout: true
       }
-      // {
-      //   title: 'Archived',
-      //   url: '/folder/Archived',
-      //   iosIcon: archiveOutline,
-      //   mdIcon: archiveSharp
-      // },
       // {
       //   title: 'Trash',
       //   url: '/folder/Trash',
@@ -85,19 +95,29 @@ export default defineComponent({
     ];
     // const labels = [''];
     
-    const path = window.location.pathname.split('folder/')[1];
-    if (path !== undefined) {
-      selectedIndex.value = appPages.findIndex(page => page.title.toLowerCase() === path.toLowerCase());
-    }
+    // const path = window.location.pathname.split('folder/')[1];
+    // if (path !== undefined) {
+    //   selectedIndex.value = appPages.findIndex(page => page.title.toLowerCase() === path.toLowerCase());
+    // }
     
     const route = useRoute();
     
     return { 
       selectedIndex,
       appPages, 
+      logOutOutline,
       // labels,
-      isSelected: (url: string) => url === route.path ? 'selected' : ''
+      isSelected: url => url === route.path ? 'selected' : ''
     }
+  },
+  methods: {
+    logout(i) {
+      this.selectedIndex = i;
+      const auth = new Auth();
+      auth.logout();
+      console.log(i, auth);
+    },
+    
   }
 });
 </script>

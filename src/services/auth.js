@@ -1,4 +1,6 @@
 import { POST_, FORMAT_DATA_TO_POST } from './helpers';
+import StorageService from './storage';
+
 
 export default class Auth {
     login(user) {
@@ -6,7 +8,8 @@ export default class Auth {
             const data = FORMAT_DATA_TO_POST(user);
 
             POST_('read_one', 'auth', data).then(result => {
-                console.log(result);
+                const storage = new StorageService();
+                storage.set("userSession", { id: result.records[1][1], sessionId: result.records[1][2] });
                 resolve(result);
             });
         });
@@ -21,5 +24,9 @@ export default class Auth {
                 resolve(userId);
             });
         });
+    }
+    logout() {
+        const storage = new StorageService();
+        storage.clear();
     }
 }

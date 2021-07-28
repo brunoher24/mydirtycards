@@ -23,10 +23,15 @@ import '@ionic/vue/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
+import Pusher_ from './plugins/pusher';
+const apiKey = '75f76708cd7f214f633a'; // process.env.PUSHER_APP_KEY;
+console.log(process.env);
+
 const app = createApp(App)
-  .use(IonicVue)
-  .use(router);
-  
+    .use(IonicVue)
+    .use(router)
+    .use(Pusher_, { apiKey, cluster: 'eu' });
+
 router.isReady().then(() => {
-  app.mount('#app');
+    app.mount('#app');
 });
