@@ -26,6 +26,8 @@
             Réponses
           </button>
         </header>
+        <NotificationPopup :shouldGet="['gameId', 'userSession']"  />
+
         <ConfirmPopup
           v-if="showConfirmPopup"
           :confirmText="confirmPopupText"
@@ -125,7 +127,7 @@ import Caroussel from "../components/Caroussel";
 import QuestionEditFormPopup from "../components/QuestionEditFormPopup";
 import AnswerEditFormPopup from "../components/AnswerEditFormPopup";
 import ConfirmPopup from "../components/ConfirmPopup";
-
+import NotificationPopup from "../components/NotificationPopup";
 
 import Answer from '../models/Answer';
 import Question from '../models/Question';
@@ -146,7 +148,8 @@ export default {
     AnswerEditFormPopup,
     QuestionEditFormPopup,
     ConfirmPopup,
-    IonIcon
+    IonIcon,
+    NotificationPopup
   },
   setup() {
     return {

@@ -166,6 +166,10 @@
             >www.flaticon.com</a
           >
         </div>
+
+        <ModalPopup 
+        :data_="modalPopupData" 
+        v-on:close-and-ok="closeModalPopup"/>
       </div>
     </ion-content>
   </ion-page>
@@ -175,7 +179,12 @@
 import { IonContent, IonPage, IonIcon } from "@ionic/vue";
 import { closeCircleOutline, eyeOutline, eyeOffOutline } from "ionicons/icons";
 
+import ModalPopup from "../components/ModalPopup";
+
+
 import Auth from '../services/auth';
+import {mapActions} from "vuex";
+
 
 export default {
   name: "Login",
@@ -183,6 +192,7 @@ export default {
     IonContent,
     IonPage,
     IonIcon,
+    ModalPopup
   },
   setup() {
     return {
@@ -193,6 +203,7 @@ export default {
   },
   data() {
     return {
+      modalPopupData: null,
       shouldDisplayLoginForm: false,
       shouldDisplaySignupForm: false,
       user: {
@@ -209,26 +220,14 @@ export default {
         email: false,
         pwd: false,
         differentPwds: false
-      },
-      events: []  // TEST
+      } 
     };
   },
-  mounted() { // TEST --
-    console.log('subscribing to `my-channel`...', {
-      $pusher: this.$pusher,
-    })
 
-    const channel = this.$pusher.subscribe('my-channel');
-
-    channel.bind('pusher:subscription_succeeded', () => console.log('subscription succeeded'))
-
-    channel.bind('my-event', event => {
-      console.log('my-event', event)
-      this.events.push(event)
-    });
-  }, // -- TEST
-  
   methods: {
+    ...mapActions("user", {
+        setUserSession: "setUserSession",
+    }),
     displaySignupForm() {
       this.shouldDisplayLoginForm = false;
       this.shouldDisplaySignupForm = true;
@@ -270,21 +269,34 @@ export default {
         window.setTimeout(() => {
           this.isSignedUp = false;
           this.$router.push("accueil");
-        }, 2000);
+        }, 1000);
       });
     },
     login() {
       const auth = new Auth();
-      auth.login(this.user).then(() => {
+      auth.login(this.user).then(userSession => {
+        this.setUserSession({...userSession, alias: this.user.alias});
+        console.log({...userSession, alias: this.user.alias})
         this.isSignedUp = true;
         window.setTimeout(() => {
           this.isSignedUp = false;
           this.$router.push("accueil");
-        }, 2000);
+        }, 1000);
       }).catch(err => {
         console.log(err);
+        this.openModal("Erreur", err[1][1]);
       });
 
+    },
+    closeModalPopup() {
+      this.modalPopupData = null;
+    },
+    openModal(title, mess) {
+      this.modalPopupData = {
+        title,
+        body: mess,
+        ok: "Fermer",
+      };
     },
   },
 };

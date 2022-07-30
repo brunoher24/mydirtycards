@@ -2,6 +2,8 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router';
 
+import store from './store/index';
+
 import { IonicVue } from '@ionic/vue';
 
 /* Core CSS required for Ionic components to work properly */
@@ -25,11 +27,12 @@ import './theme/variables.css';
 
 import Pusher_ from './plugins/pusher';
 const apiKey = '75f76708cd7f214f633a'; // process.env.PUSHER_APP_KEY;
-console.log(process.env);
+// console.log(process.env);
 
 const app = createApp(App)
     .use(IonicVue)
     .use(router)
+    .use(store)
     .use(Pusher_, { apiKey, cluster: 'eu' });
 
 router.isReady().then(() => {

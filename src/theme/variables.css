@@ -4,6 +4,11 @@ http://ionicframework.com/docs/theming/ */
 
 /** Ionic CSS Variables **/
 
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@800&family=Palette+Mosaic&display=swap');
+* {
+    font-family: "Dosis";
+}
+
 .custom-btn {
     width: 90%;
     display: block;
@@ -12,6 +17,7 @@ http://ionicframework.com/docs/theming/ */
     border-radius: 10px;
     box-sizing: border-box;
     border: none;
+    text-align: center;
 }
 
 .empty-btn {
@@ -66,6 +72,7 @@ http://ionicframework.com/docs/theming/ */
     --custom-red: #EF5857;
     --custom-yellow: #FFDE69;
     --custom-pale-yellow: #FFECAA;
+    --custom-pale-brown: #D4C7A1;
     /** primary **/
     --ion-color-primary: #3880ff;
     --ion-color-primary-rgb: 56, 128, 255;

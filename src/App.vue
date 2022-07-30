@@ -1,25 +1,33 @@
 <template>
   <IonApp>
-    <IonSplitPane content-id="main-content">
+    <IonSplitPane content-id="main-content"  @listenForPush="bindEvent($event)">
       <ion-menu content-id="main-content" type="overlay">
         <ion-content>
           <ion-list id="inbox-list">
-            <ion-list-header>MyDirtyCards</ion-list-header>
+            <ion-list-header>My dirty cards</ion-list-header>
             <ion-note>Amusement & indécence</ion-note>
-  
             <ion-menu-toggle auto-hide="false" v-for="(p, i) in appPages" :key="i">
-
-              <ion-item v-if="!p.shouldLogout" @click="selectedIndex = i" router-direction="root" :router-link="p.url" lines="none" detail="false" class="hydrated" :class="{ selected: selectedIndex === i }">
-                <ion-icon :class="p.className" :name="p.className"></ion-icon>
+              <ion-item 
+              v-if="!p.shouldLogout" 
+              @click="selectedIndex = i" 
+              router-direction="root" 
+              :router-link="p.url" 
+              lines="none" 
+              detail="false" 
+              class="hydrated item-menu-li" 
+              :class="{ selected: selectedIndex === i }">
+                <img class="menu-item-img" :src="p.img" :alt="p.alt">
+                <!-- <ion-icon :class="p.className" :name="p.className"></ion-icon> -->
                 <ion-label>{{ p.title }}</ion-label>
               </ion-item>
                <ion-item v-else @click="logout(i)" router-direction="root" :router-link="p.url" lines="none" detail="false" class="hydrated" :class="{ selected: selectedIndex === i }">
-                <ion-icon :class="p.className" :name="p.className"></ion-icon>
+                <!-- <ion-icon :class="p.className" :name="p.className"></ion-icon> -->
+                <img class="menu-item-img" :src="p.img" :alt="p.alt">
                 <ion-label>{{ p.title }}</ion-label>
               </ion-item>
             </ion-menu-toggle>
           </ion-list>
-  
+          <ion-note class="side-menu-user-alias-msg"><span>{{getUserSessionAlias()}},</span><br> est parmis nous faites du bruiiit</ion-note>
           <!-- <ion-list id="labels-list">
             <ion-list-header>Labels</ion-list-header>
   
@@ -29,17 +37,23 @@
             </ion-item>
           </ion-list> -->
         </ion-content>
-      </ion-menu>
-      <ion-router-outlet id="main-content"></ion-router-outlet>
+      </ion-menu>    
+        <ion-router-outlet id="main-content"></ion-router-outlet>
     </IonSplitPane>
   </IonApp>
 </template>
 
 <script lang="js">
-import { IonApp, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonMenu, IonMenuToggle, IonNote, IonRouterOutlet, IonSplitPane, IonIcon } from '@ionic/vue';
+import { IonApp, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonMenu, IonMenuToggle, IonNote, IonRouterOutlet, IonSplitPane } from '@ionic/vue';
 import { defineComponent, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { logOutOutline } from "ionicons/icons";
+// import { logOutOutline } from "ionicons/icons";
+
+import LeaveImg from "./assets/leave.webp"
+import CuteCatImg from "./assets/my-cards.webp"
+import PlayImg from "./assets/play.webp"
+
+import { mapGetters } from "vuex";
 
 import Auth from './services/auth';
 
@@ -57,8 +71,7 @@ export default defineComponent({
     IonMenuToggle, 
     IonNote, 
     IonRouterOutlet, 
-    IonSplitPane,
-    IonIcon
+    IonSplitPane  
   },
   setup() {
     const selectedIndex = ref(0);
@@ -66,19 +79,22 @@ export default defineComponent({
       {
         title: 'Mes cartes',
         url: '/mes-cartes',
-        className:'custom-cards'
+        className:'custom-cards',
+        img: CuteCatImg
       },
       {
-        title: 'jouer',
+        title: 'Jouer',
         url: '/accueil',
-        className:'custom-game'
+        className:'custom-game',
+        img: PlayImg
       },
       {
         title: 'Déconnexion',
         url: '/connexion',
-        iosIcon: logOutOutline,
-        mdIcon: logOutOutline,
-        shouldLogout: true
+        // iosIcon: logOutOutline,
+        // mdIcon: logOutOutline,
+        shouldLogout: true,
+        img: LeaveImg
       }
       // {
       //   title: 'Trash',
@@ -105,19 +121,30 @@ export default defineComponent({
     return { 
       selectedIndex,
       appPages, 
-      logOutOutline,
+      // logOutOutline,
       // labels,
-      isSelected: url => url === route.path ? 'selected' : ''
+      isSelected: url => url === route.path ? 'selected' : '',
+      notificationText: "",    
     }
+  },
+  computed: {
+    ...mapGetters("user", {
+      getUserSessionAlias: "getUserSessionAlias",
+    }),
   },
   methods: {
     logout(i) {
       this.selectedIndex = i;
       const auth = new Auth();
       auth.logout();
-      console.log(i, auth);
     },
-    
+    closeConfirmPopup(){
+      this.notificationText = "";    
+    },
+    bindEvent($event) {
+      console.log($event);
+      this.notificationText = "Coucou, je suis une notification !";
+    }
   }
 });
 </script>
@@ -243,6 +270,8 @@ ion-item.selected {
   --color: var(--ion-color-primary);
 }
 
+
+
 ion-icon {
     mask-size: contain;
     mask-position: 50% 50%;
@@ -252,13 +281,26 @@ ion-icon {
     height: 1em;
   }
 
-  .custom-cards {
-    mask-image: url(./assets/cards-icon.svg);
+  .item-menu-li {
+    margin: 30px 0;
   }
-  .custom-game {
-    mask-image: url(./assets/game-icon.svg);
+
+  .menu-item-img {
+    object-fit: cover;
+    object-position: center;
+    width: 40px;
+    height: 40px;
+    margin-right: 20px;
   }
-  .custom-new-game {
-    mask-image: url(./assets/new-game-icon.svg);
+
+  .side-menu-user-alias-msg {
+    display: block;
+    position: absolute;
+    bottom: 20px;
+  }
+
+  .side-menu-user-alias-msg span {
+    font-weight: bolder;
+    color: var(--custom-red);
   }
 </style>

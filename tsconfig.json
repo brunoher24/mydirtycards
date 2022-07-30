@@ -12,7 +12,6 @@
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
-      "webpack-env",
       "jest"
     ],
     "paths": {
@@ -33,7 +32,7 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx"
-, "src/main.ts", "src/plugins/pusher.js"  ],
+, "src/main.js", "src/plugins/pusher.js", "src/router/index.js"  ],
   "exclude": [
     "node_modules"
   ]

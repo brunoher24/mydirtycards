@@ -6,26 +6,21 @@
           <ion-menu-button color="primary"></ion-menu-button>
         </ion-buttons>
         <!-- <ion-title>{{ $route.params.id }}</ion-title> -->
-        <ion-title>Connexion</ion-title>
+        <ion-title>Partie en cours</ion-title>
       </ion-toolbar>
     </ion-header>
     
     <ion-content :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">{{ $route.params.id }}</ion-title>
-        </ion-toolbar>
-      </ion-header>
-    
       <div id="container">
-       
+        
       </div>
     </ion-content>
   </ion-page>
 </template>
 
-<script lang="ts">
+<script>
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
+import GamePlayerService from "../models/GamePlayer";
 
 export default {
   name: 'GameInProgress',
@@ -37,7 +32,27 @@ export default {
     IonPage,
     IonTitle,
     IonToolbar
+  },
+  data(){
+    return {
+      currentGameUsers : []  
+    }
+  },
+  computed: {
+    // ...mapGetters("user", {
+    //   getUserSession: "getUserSession",
+    // })
+  },
+  mounted() {
+    (async () => {
+      const gamePlayerService = new GamePlayerService();
+      this.currentGameUsers = await gamePlayerService.readByGameId(this.$route.params.id);
+      console.log(this.currentGameUsers);
+      // this.userSession = this.getUserSession();
+    })();
+    
   }
+
 }
 </script>
 
